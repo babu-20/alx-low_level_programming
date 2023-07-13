@@ -1,125 +1,101 @@
+#include "main.h"
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
+
+#define ERR_MSG "eError"
+
 /**
- * is_valid_number - checks if a given string is composed only of digits
- * @num: the given string to be checked
- * Return: 0 if false, 1 if true
+ * is_digit - checks if a string contains a non-digit char
+ * @s: string to be evaluated
  *
+ * Return: 0 if a non-digit is found, 1 otherwise
  */
-int is_valid_number(char *num)
+int is_digit(char *s)
 {
-	while (*num)
+	int i = 0;
+
+	while (s[i])
 	{
-	if (!isdigit(*num))
-	{
-	return (0);
-	}
-	num++;
+		if (s[i] < '0' || s[i] > '9')
+			return (0);
+		i++;
 	}
 	return (1);
 }
 
 /**
- * multiply - return product of two integers
- * @num1: the first integer
- * @num2: the second integer
- * @result: product
- * Return: product
+ * _strlen - returns the length of a string
+ * @s: string to evaluate
+ *
+ * Return: the length of a string
  */
-int multiply(const char *num1, const char *num2, char *result)
+int _strlen(char *s)
 {
-	int *intermid_result;
-	int i, j, product, pos1, pos2, sum, index, start;
-	int len1 = 0;
-	int len2 = 0;
+	int i = 0;
 
-	while (num1[len1] != '\0')
-	len1++;
-
-	while (num2[len2] != '\0')
-	len2++;
-
-	intermid_result = malloc(sizeof(int) * (len1 + len2));
-
-	if (intermid_result == NULL)
-	return (0);
-
-	for (i = len1 - 1; i >= 0; i--)
+	while (s[i] != '\0')
 	{
-	for (j = len2 - 1; j >= 0; j--)
-	{
-	product = (num1[i] - '0') * (num2[j] - '0');
-	pos1 = i + j;
-	pos2 = i + j + 1;
-	sum = product + intermid_result[pos2];
-
-	intermid_result[pos1] += sum / 10;
-	intermid_result[pos2] = sum % 10;
+		i++;
 	}
-	}
-
-	index = 0;
-	start = 0;
-
-	while (index < len1 + len2)
-	{
-	if (intermid_result[index] != 0)
-	start = 1;
-
-	if (start)
-	{
-	result[index] = intermid_result[index] + '0';
-	index++;
-			}
-	}
-
-	result[index] = '\0';
-
-	free(intermid_result);
-	return (1);
+	return (i);
 }
 
 /**
- * main -  check if the number of arguments (argc) is not equal to 3
- * @argc:  argument count
- * @argv: argument vector
- * Return: status of 98
+ * errors - handles errors for main
+ */
+void errors(void)
+{
+	printf("Error\n");
+	exit(98);
+}
+
+/**
+ * main - multiplies two positive numbers
+ * @argc: number of arguments
+ * @argv: array of arguments
+ *
+ * Return: always 0 (Success)
  */
 int main(int argc, char *argv[])
 {
-	char *num1;
-	char *num2;
-	int index;
-	char result[256];
+	char *s1, *s2;
+	int len1, len2, len, i, carry, digit1, digit2, *result, a = 0;
 
-	if (argc != 3)
+	s1 = argv[1], s2 = argv[2];
+	if (argc != 3 || !is_digit(s1) || !is_digit(s2))
+		errors();
+	len1 = _strlen(s1);
+	len2 = _strlen(s2);
+	len = len1 + len2 + 1;
+	result = malloc(sizeof(int) * len);
+	if (!result)
+		return (1);
+	for (i = 0; i <= len1 + len2; i++)
+		result[i] = 0;
+	for (len1 = len1 - 1; len1 >= 0; len1--)
 	{
-	_putchar(Error);
+		digit1 = s1[len1] - '0';
+		carry = 0;
+		for (len2 = _strlen(s2) - 1; len2 >= 0; len2--)
+		{
+			digit2 = s2[len2] - '0';
+			carry += result[len1 + len2 + 1] + (digit1 * digit2);
+			result[len1 + len2 + 1] = carry % 10;
+			carry /= 10;
+		}
+		if (carry > 0)
+			result[len1 + len2 + 1] += carry;
+	}
+	for (i = 0; i < len - 1; i++)
+	{
+		if (result[i])
+			a = 1;
+		if (a)
+			_putchar(result[i] + '0');
+	}
+	if (!a)
+		_putchar('0');
 	_putchar('\n');
-	return (98);
-	}
-
-	num1 = argv[1];
-	num2 = argv[2];
-
-	if (!is_valid_number(num1_str) || !is_valid_number(num2_str))
-	{
-	_putchar(Error);
-	_putchar('\n');
-	return (98);
-	}
-
-	if (multiply(num1, num2, result))
-	{
-	index = o;
-	while (result[index] != '\0')
-	{
-	_putchar(result[index]);
-	index++;
-	}
-	_putchar('\n');
-	}
-
+	free(result);
 	return (0);
 }
