@@ -9,8 +9,8 @@ section .text
 
 global main
 main:
-	sub rsp, 8	;alignes the stack
-	mov rdi, fmt
+	sub rsp, 8	;aligns the stack
+	mov rdi, frmt ; Corrected the variable name here to 'frmt'
 	mov rsi, msg
 	xor eax, eax
 	call printf
